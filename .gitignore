@@ -18,12 +18,3 @@ __pycache__/
 # pickles
 *.pkl
 *.pickle
-
-# images
-*.png
-*.jpg
-*.jpeg
-
-# except the final and original chart
-!final-chart.png
-!original-chart.png
