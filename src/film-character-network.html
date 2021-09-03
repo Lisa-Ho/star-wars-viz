@@ -1,0 +1,98 @@
+<html>
+<head>
+    <title>Visualising networks</title>
+        <style>
+        /*red*/
+        </style>
+</head>
+<body>
+    <svg id="container" height="750" width="750">
+        <g id="body" style="transform:translate(50px, 50px)"></g>
+    </svg>
+</body>
+<script src="https://d3js.org/d3.v6.js"></script>
+<script>
+    let body = d3.select("#body")
+
+    d3.json("film-characters-network.json").then(showData)
+
+    // draw elements to be shown on the screen
+    function createElements(data) {
+        let links = body.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(data.links)
+            .enter()
+            .append("line")
+                .attr("stroke", "black")
+                .attr("stroke-width", "1px")        
+
+        let nodes = body.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter()
+            .append("circle")
+                .attr("r", 12)
+                .attr("fill", "#69b3a2")
+
+        let label = body.append("g")
+            .attr("class", "labels")
+            .selectAll("text")
+            .data(data.nodes)
+            .enter()
+            .append("text")
+                .attr("class", "label")
+                .text(function(d) { 
+                    return d.name})
+        
+    }
+
+    // update data and decide on the position of the elements
+    function updateElements() {
+        d3.select(".nodes")
+            .selectAll("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+       
+        d3.select(".links")
+            .selectAll("line")
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y)
+        
+        d3.select(".labels")
+            .selectAll("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y)
+            .style("font-size", "10px").style("fill", "black")
+    }
+
+
+    // show all data
+    function showData(data) {
+        let bodyHeight = 600
+        let bodyWidth = 600
+
+        console.log(data)
+
+        createElements(data)
+
+        // Let's list the force we wanna apply on the network
+        let simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(
+                (d) => d.id))
+            .force("charge", d3.forceManyBody().strength(-200))  // This adds repulsion between nodes. Play with the -200 for the repulsion strength
+            .force("center", d3.forceCenter(bodyHeight / 2, bodyWidth / 2))  // This force attracts nodes to the center of the body area
+
+        simulation
+            .nodes(data.nodes)
+            .on("tick", updateElements) ; 
+       
+        simulation.force("link").links(data.links) ; 
+    }
+
+</script>
+
+</html>
