@@ -9,6 +9,7 @@
     <svg id="container" height="750" width="750">
         <g id="body" style="transform:translate(50px, 50px)"></g>
     </svg>
+    <div id="tooltip">Tooltip</div>
 </body>
 <script src="https://d3js.org/d3.v6.js"></script>
 <script>
@@ -36,7 +37,8 @@
                 .attr("r", 12)
                 .attr("fill", "#69b3a2")
 
-        let label = body.append("g")
+        /*     
+        let labels = body.append("g")
             .attr("class", "labels")
             .selectAll("text")
             .data(data.nodes)
@@ -45,8 +47,17 @@
                 .attr("class", "label")
                 .text(function(d) { 
                     return d.name})
-        
+        */
     }
+
+    // creat funciton for position of tooltips
+    function showTooltip(text, coords) {
+        d3.select("#tooltip").html(text)
+            .style("top", coords[1] + 10)
+            .style("left", coords[0])
+            .style("display", "block")
+    }
+
 
     // update data and decide on the position of the elements
     function updateElements() {
@@ -54,6 +65,21 @@
             .selectAll("circle")
             .attr("cx", d => d.x)
             .attr("cy", d => d.y)
+
+            // not working!
+            .on("mouseenter", d => {
+                // pass text and coordinates to the function
+                showTooltip(d.name, 
+                            [d3.event.X, d3.event.Y]) 
+            })
+            .on("mousemove", d => {
+                // pass text and coordinates to the function
+                showTooltip(d.name, 
+                            [d3.event.X, d3.event.Y]) 
+            })
+            .on("mouseleave", d => {
+                d3.select("#tooltip").style("display", "none")
+            })
        
         d3.select(".links")
             .selectAll("line")
@@ -67,9 +93,8 @@
             .attr("x", d => d.x)
             .attr("y", d => d.y)
             .style("font-size", "10px").style("fill", "black")
+        
     }
-
-
     // show all data
     function showData(data) {
         let bodyHeight = 600
