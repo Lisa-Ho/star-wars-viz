@@ -21,3 +21,6 @@ __pycache__/
 # pickles
 *.pkl
 *.pickle
+
+#images in assets
+assets/*
